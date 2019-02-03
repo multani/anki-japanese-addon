@@ -29,17 +29,15 @@ class Content:
         self.polly = session.client("polly")
 
     def speak(self, value):
-        try:
-            response = self.polly.synthesize_speech(
-                VoiceId=self.polly_voice,
-                OutputFormat=self.output_format,
-                Text=value,
-            )
-        except botocore.exceptions.BotoCoreError as exc:
-            print("Unable to synthesize: {}".format(exc))
-            return None, None
+        print("Synthesizing: Voice={}, Format={}, Text={}".format(
+            self.polly_voice, self.output_format, value
+        ))
+        response = self.polly.synthesize_speech(
+            VoiceId=self.polly_voice,
+            OutputFormat=self.output_format,
+            Text=value,
+        )
 
-        # TODO: manage AWS errors while synthesizing
         return response['AudioStream'], self.output_format
 
     def translate(self, value):
@@ -48,12 +46,17 @@ class Content:
         })
         url = "{}?{}".format(self.jisho_api, qs)
 
+        print("Querying: {}".format(url))
         u = urlopen(url)
         data = json.loads(u.read())
 
         if data['meta']['status'] != 200:
             # not found
-            return None
+            raise ValueError("Received content with meta.status={}"
+                    .format(data['meta']['status']))
+
+        if len(data['data']) <= 0:
+            raise ValueError("Couldn't find any translation on Jisho")
 
         tr = data['data'][0]
 

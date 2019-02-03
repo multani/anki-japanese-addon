@@ -14,26 +14,56 @@ class Editor:
         field = allFields[index]
 
         # Value of the lost-focus field
-        value = note[field].strip()
+        jp = note[field].strip()
 
-        if field == self.f["japanese"] and value:
-            jp = note[field]
+        if field != self.f["japanese"] or not jp:
+            return updated
+
+        self.fillTranslation(note, jp)
+        self.fillSound(note, jp)
+
+        return True # updated
+
+    def fillTranslation(self, note, jp):
+        refs = ["romaji", "sense"]
+
+        if all(note[self.f[ref]] != "" for ref in refs):
+            return # Don't need to update
+
+        try:
             tr = self.content.translate(jp)
+        except Exception as exc:
+            print("Unable to translate '{}': {}".format(jp, exc))
+            return
 
-            note[self.f["romaji"]] = tr["romaji"]
-            note[self.f["sense"]] = "<br>".join(tr["senses"])
+        self.fill(note, "romaji", tr["romaji"])
+        self.fill(note, "sense", "<br>".join(tr["senses"]))
 
+
+    def fillSound(self, note, jp):
+        refs = ["audio"]
+
+        if all(note[self.f[ref]] != "" for ref in refs):
+            return # Don't need to update
+
+        try:
             sound, format = self.content.speak(jp)
-            if sound is not None:
-                media_dir = mw.col.media.dir()
-                filename = "{}.{}".format(jp, format)
-                filepath = os.path.join(media_dir, filename)
+        except Exception as exc:
+            print("Unable to synthesize sound '{}': {}".format(jp, exc))
+        else:
+            media_dir = mw.col.media.dir()
+            filename = "{}.{}".format(jp, format)
+            filepath = os.path.join(media_dir, filename)
 
-                with open(filepath, "wb") as fp:
-                    fp.write(sound.read())
+            with open(filepath, "wb") as fp:
+                fp.write(sound.read())
 
-                note[self.f["audio"]] = "[sound:{}]".format(filename)
+            self.fill(note, "audio", "[sound:{}]".format(filename))
 
-            updated = True
+    def fill(self, note, field_ref, value):
+        """Fill the specific field, referenced by its name, if it's empty"""
 
-        return updated
+        field = self.f[field_ref]
+
+        if note[field] == "":
+            note[field] = value
