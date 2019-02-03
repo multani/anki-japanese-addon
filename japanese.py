@@ -17,7 +17,6 @@ class Content:
         self.output_format = "mp3"
         self.jisho_api = "https://jisho.org/api/v1/search/words"
 
-        print("Initializing AWS settings")
         aws = self.config.get("aws", {})
         kw = {
             "region_name": aws.get("region"),
