@@ -1,5 +1,5 @@
-Yet another Japanese helper plugin for Anki
-===========================================
+Yet another Japanese helper addon for Anki
+==========================================
 
 It focuses mostly on automating the followings:
 
@@ -12,7 +12,7 @@ It focuses mostly on automating the followings:
   Polly](https://aws.amazon.com/polly/)
 
   You will need credentials to access AWS and configure them in `config.json`
-  to use this plugin.
+  to use this addon.
 
 
 See also
@@ -27,7 +27,7 @@ they are doing than me :)
 Dependencies
 ------------
 
-This plugin requires the following libraries:
+This addon requires the following libraries:
 
 * [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/) to interact
   with Amazon Polly
