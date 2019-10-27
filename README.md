@@ -8,7 +8,7 @@ It focuses mostly on automating the followings:
   This focuses especially on Hiragana, Katakana and their Romaji interpretation
   for now.
 
-* to autogeneration of Japanese sounds using [Amazon
+* the autogeneration of Japanese sounds using [Amazon
   Polly](https://aws.amazon.com/polly/)
 
   You will need credentials to access AWS and configure them in `config.json`
